@@ -1,0 +1,16 @@
+name: ba
+channels:
+  - conda-forge
+  - gpytorch
+dependencies:
+  - python=3.8
+  - pip
+  - conda-forge::cython
+  - conda-forge::libblas=*=*mkl
+  - conda-forge::numpy
+  - conda-forge::scipy
+  - conda-forge::cudatoolkit=11.0
+  - pytorch::pytorch==1.7.1
+  - pytorch::torchvision==0.8.2
+  - pytorch::botorch=0.2.1
+  - gpytorch::gpytorch

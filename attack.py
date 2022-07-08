@@ -17,7 +17,7 @@ from gpytorch.mlls import ExactMarginalLogLikelihood
 from botorch.acquisition import qExpectedImprovement, ExpectedImprovement, PosteriorMean
 from botorch.acquisition import ProbabilityOfImprovement, UpperConfidenceBound
 from botorch.sampling.samplers import SobolQMCNormalSampler
-from botorch.optim import joint_optimize, gen_batch_initial_conditions
+from botorch.optim.optimize import joint_optimize, gen_batch_initial_conditions
 from botorch.gen import gen_candidates_torch, get_best_candidates
 
 
@@ -225,7 +225,7 @@ def attack_bayes():
 
         # ignore incorrectly classified images
         if label == predicted_label:
-            # itr, success = bayes_opt(image, label)
+            itr, success = bayes_opt(image, label)
             retry = 0
             while retry < 5:
                 try:
