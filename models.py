@@ -238,7 +238,7 @@ class SimpleMNIST(nn.Module):
         return predict[0]
 
 
-def load_model(model, filename):
+def load_model(model, filename, device):
     """ Load the training model """
-    model.load_state_dict(torch.load(filename))
+    model.load_state_dict(torch.load(filename, map_location=device))
 

@@ -304,16 +304,18 @@ if __name__ == '__main__':
 
     if args.dset == 'mnist':
         net = MNIST()
-        net.cuda()
+        # net.cuda()
+        net.to(device)
         net = torch.nn.DataParallel(net, device_ids=[0])
-        load_model(net, 'models/mnist_gpu.pt')
+        load_model(net, 'models/mnist_gpu.pt', device)
         net.eval()
         cnn_model = net.module
     elif args.dset == 'cifar10':
         net = CIFAR10()
-        net.cuda()
+        # net.cuda()
+        net.to(device)
         net = torch.nn.DataParallel(net, device_ids=[0])
-        load_model(net, 'models/cifar10_gpu.pt')
+        load_model(net, 'models/cifar10_gpu.pt', device)
         net.eval()
         cnn_model = net.module
     elif args.dset == 'imagenet':
