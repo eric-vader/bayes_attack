@@ -6,7 +6,7 @@ import numpy as np
 
 
 def load_mnist_data():
-    dataset = dsets.MNIST(root='./data/mnist', train=False,
+    dataset = dsets.MNIST(root='./data/mnist', download=True, train=False,
                           transform=transforms.ToTensor())
     return dataset
 
