@@ -6,6 +6,9 @@ import pickle
 import numpy as np
 import torch
 import sys
+import logging
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
+
 
 from models import MNIST, CIFAR10, IMAGENET, load_model
 from utils import load_mnist_data, load_cifar10_data, load_imagenet_data
@@ -178,11 +181,9 @@ def bayes_opt(x0, y0):
         if adv_label != y0:
             success = 1
             if args.inf_norm:
-                print('Adversarial Label', adv_label.item(),
-                      'Norm:', best_candidate.abs().max().item())
+                logging.info(f'Adversarial Label {adv_label.item()} Norm: {best_candidate.abs().max().item()}')
             else:
-                print('Adversarial Label', adv_label.item(),
-                      'Norm:', best_candidate.norm().item())
+                logging.info(f'Adversarial Label {adv_label.item()} Norm: {best_candidate.norm().item()}')
             return query_count, success
         query_count += args.q
     # not successful (ran out of query budget)
@@ -213,15 +214,15 @@ def attack_bayes():
         samples = np.load('random_indices_imagenet.npy')
         samples = samples[args.start: args.start + args.num_attacks]
 
-    print("Length of sample_set: ", len(samples))
+    logging.info("Length of sample_set: ", len(samples))
     results_dict = {}
     # loop over images, attacking each one if it is initially correctly classified
     for idx in samples[:args.num_attacks]:
         image, label = test_dataset[idx]
         image = image.unsqueeze(0).to(device)
-        print(f"Image {idx:d}   Original label: {label:d}")
+        logging.info(f"Image {idx:d}   Original label: {label:d}")
         predicted_label = torch.argmax(cnn_model.predict_scores(image))
-        print("Predicted label: ", predicted_label.item())
+        logging.info(f"Predicted label: {predicted_label.item()}" )
 
         # ignore incorrectly classified images
         if label == predicted_label:
@@ -232,9 +233,9 @@ def attack_bayes():
                     itr, success = bayes_opt(image, label)
                     break
                 except:
-                    print('Retry_{}'.format(retry))
+                    logging.info(f'Retry_{retry}')
                     retry += 1
-            print(itr, success)
+            logging.info(f"{itr}, {success}")
             if success:
                 results_dict[idx] = itr
             else:
@@ -244,7 +245,7 @@ def attack_bayes():
 
     # results saved as dictionary, with entries of the form
     # dataset idx : 0 if unsuccessfully attacked, # of queries if successfully attacked
-    print('RESULTS', results_dict)
+    logging.info(f'RESULTS {results_dict}')
     if args.save:
         pickle.dump(results_dict,
                     open(f"{args.dset:s}{args.arch:s}_{args.start:d}_{args.iter:d}_{args.dim:d}_{args.eps:.2f}_{args.num_attacks:d}.pkl", 'wb'))
@@ -298,9 +299,13 @@ if __name__ == '__main__':
     # if True, use cosine FFT basis vectors
     parser.add_argument('--cos', default=False, action='store_true')
     args = parser.parse_args()
-    print(args)
+    logging.info(args)
+
+
+    torch.cuda.is_available = lambda : False
 
     device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
+    logging.info(device)
 
     if args.dset == 'mnist':
         net = MNIST()
@@ -335,4 +340,4 @@ if __name__ == '__main__':
                           device=device).float()
     attack_bayes()
     timeend = time.time()
-    print("\n\nTotal running time: %.4f seconds\n" % (timeend - timestart))
+    logging.info("\n\nTotal running time: %.4f seconds\n" % (timeend - timestart))
