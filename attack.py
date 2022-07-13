@@ -76,7 +76,7 @@ def optimize_acqf_and_get_observation(acq_func, x0, y0):
 
     # optimize
     if args.optimize_acq == 'scipy':
-        candidates = joint_optimize(
+        candidates, _ = joint_optimize(
             acq_function=acq_func,
             bounds=bounds,
             q=args.q,
@@ -214,7 +214,7 @@ def attack_bayes():
         samples = np.load('random_indices_imagenet.npy')
         samples = samples[args.start: args.start + args.num_attacks]
 
-    logging.info("Length of sample_set: ", len(samples))
+    logging.info(f"Length of sample_set: {len(samples)}")
     results_dict = {}
     # loop over images, attacking each one if it is initially correctly classified
     for idx in samples[:args.num_attacks]:

@@ -19,7 +19,8 @@ def load_cifar10_data():
 
 def load_imagenet_data(size1=256, size2=224):
     dataset = dsets.ImageFolder(
-        '../../../../../elm/ILSVRC2012/val/',
+        # '../../../../../elm/ILSVRC2012/val/',
+        '/home/Eric_Vader/adversarial/ImageNetTV/ILSVRC2012',
         transform=transforms.Compose([
             transforms.Resize(size1),
             transforms.CenterCrop(size2),
@@ -77,18 +78,7 @@ def fft_transform_mc(pert, dataset_size, channel, cosine, sine):
         elif sine:
             t_dim = int(np.sqrt(pert.shape[1] / channel))
             t[:, :t_dim, :t_dim, 1] = pert[i].view(channel, t_dim, t_dim)
-        
         res[i] = torch.irfft(t, 3, normalized=True, onesided=False)
-        # _t = torch.view_as_complex(t)
-        # __t = torch.complex(t[..., 0], t[..., 1])
-        # torch.testing.assert_allclose(_t, __t)
-        # _alt = torch.fft.ifftn(__t, dim=(0,1,2), s=(3, 32, 32), norm='ortho')
-        # print(_alt.size(), res[i].size())
-        # print((res[i] - _alt).abs().max())
-        # print(_alt, res[i])
-        # input()
-        # print(torch.testing.assert_allclose(_alt, res[i]))
-        # python attack.py --sin --cos --save --dim 18 --channel 3 --num_attacks 1000
     return res
 
 
